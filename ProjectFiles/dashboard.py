@@ -192,6 +192,13 @@ def bloodflow_figure(value, bloodflow_checkmarks):
             bf["Blood Flow (ml/s) - SMA"] = ut.calculate_SMA(bf["Blood Flow (ml/s)"],5) #durch ut.calculate wird Funktion aus utilities aufgerufen 
             fig3 = px.line(bf, x="Time (s)", y="Blood Flow (ml/s) - SMA") #Beschriftung der Achsen 
 
+
+#Aufgabe 3.1 
+
+    avg = bf.mean() #Funktion zur Berechnung des MIttlewerts 
+
+    fig3.add_trace(go.Scatter(x = [0, 480], y= [avg.loc['Blood Flow (ml/s)'],avg.loc['Blood Flow (ml/s)']], mode = 'lines', name = 'average'))
+
     return fig3
 
 
