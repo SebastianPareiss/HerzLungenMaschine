@@ -133,7 +133,18 @@ def bloodflow_figure(value, bloodflow_checkmarks):
     print(bloodflow_checkmarks)
     bf = list_of_subjects[int(value)-1].subject_data
     fig3 = px.line(bf, x="Time (s)", y="Blood Flow (ml/s)")
+    
+    if bloodflow_checkmarks is not None:
 
+        if bloodflow_checkmarks == ["CMA"]:
+            bf["Blood Flow (ml/s) - CMA"] = ut.calculate_CMA(bf["Blood Flow (ml/s)"],2) 
+            fig3 = px.line(bf, x="Time (s)", y="Blood Flow (ml/s) - CMA")
+
+        if bloodflow_checkmarks == ["SMA"]:
+            print(bf)
+            bf["Blood Flow (ml/s) - SMA"] = ut.calculate_SMA(bf["Blood Flow (ml/s)"],5) 
+            print(bf[data_names[1]])
+            fig3 = px.line(bf, x="Time (s)", y="Blood Flow (ml/s) - SMA")
 
     return fig3
 
