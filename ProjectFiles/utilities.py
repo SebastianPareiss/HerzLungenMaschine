@@ -18,8 +18,9 @@ class Subject():
         #Interpolation der Daten, mithilfe von 'quadratic' werden Lücken aus _f ausgeglichen
         #https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.interpolate.html
         self.subject_data = self.subject_data.interpolate(method='quadratic', axis=0) 
-        __splited_id = re.findall(r'\d+',file_name)      
-        self.subject_id = ''.join(__splited_id)
+        #__splited_id = re.findall(r'\d+',file_name)
+        #print(__splited_id)   
+        self.subject_id = file_name.split(".csv")[0][-1] #Ausgleichen des Fehlers vom Dateipfad...Dateipfad hat immer nur Subject 2 hergegeben 
         self.names = self.subject_data.columns.values.tolist()
         self.time = self.subject_data["Time (s)"]        
         self.spO2 = self.subject_data["SpO2 (%)"]
@@ -33,11 +34,12 @@ class Subject():
 
 ### Aufgabe 2: Datenverarbeitung ###
 
-def calculate_CMA(df,n):
-    return df.expanding(n).mean()
-    pass
-    
+#https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.expanding.html
 
-def calculate_SMA(df,n):
-    return df.rolling(n).mean()
-    pass
+def calculate_CMA(df,n):  #Cumulative Moving average => mean of all previous values up to current value 
+    return df.expanding(n).mean() #Befehl für CMA => DataFrame providing expanding window calculation
+    
+#https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.rolling.html
+
+def calculate_SMA(df,n):  #Simple Moving average => unweighted mean of previous K data
+    return df.rolling(n).mean() #Befehl für SMA => DataFrame providing rolling window calculation
