@@ -134,11 +134,6 @@ def update_figure(value, algorithm_checkmarks):
 # https://www.geeksforgeeks.org/matplotlib-pyplot-scatter-in-python/
 
     ####
- 
-    #grp = ts.agg(['max', 'min', 'idxmin', 'idxmax'])
-
-    #print(max_values)
-    #print(min_values)
 
     
     if algorithm_checkmarks is not None: #Ohne diese Fkt. kann es is zu Fehlern kommen, weil Programm Probleme hat wenn beide None sind 
@@ -195,9 +190,18 @@ def bloodflow_figure(value, bloodflow_checkmarks):
 
 #Aufgabe 3.1 
 
-    avg = bf.mean() #Funktion zur Berechnung des MIttlewerts 
+    avg = bf.mean() #Funktion zur Berechnung des Mittlewerts 
 
-    fig3.add_trace(go.Scatter(x = [0, 480], y= [avg.loc['Blood Flow (ml/s)'],avg.loc['Blood Flow (ml/s)']], mode = 'lines', name = 'average'))
+    fig3.add_trace(go.Scatter(x = [0, 480], y= [avg.loc['Blood Flow (ml/s)'], avg.loc['Blood Flow (ml/s)']], mode = 'lines', name = 'average'))
+
+#Aufgabe 3.2
+        #if bloodflow_checkmarks == ["Show Limits "]:
+    y_unten = (avg.loc['Blood Flow (ml/s)'])*0.85 # *0.85 weil 15% kleiner
+    fig3.add_trace(go.Scatter(x = [0, 480], y= [y_unten, y_unten], mode = 'lines', marker_color = 'red', name = 'untere Intervallsgrenze'))
+
+
+    y_oben = (avg.loc['Blood Flow (ml/s)'])*1.15 # *1.15 weil 15% größer
+    fig3.add_trace(go.Scatter(x = [0, 480], y= [y_oben, y_oben], mode = 'lines', marker_color = 'green', name = 'obere Intervallsgrenze')) 
 
     return fig3
 
