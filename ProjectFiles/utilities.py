@@ -28,9 +28,8 @@ class Subject():
         self.blood_flow = self.subject_data["Blood Flow (ml/s)"]
         print('Subject ' + self.subject_id + ' initialized')
 
-
-
-        
+### Aufgabe 4.1: Geeignet für kleinere Perioden, je mehr desto schwerfälliger. Identifizierug von Trends über mehrer Tage-sinnvoll; kurzfristige Änderungen - eher weniger; Medsektor nicht verwenden bei Primärindikatoren, Sytem reagiert auf Notfälle zu langsam; eher EMA da dieser vorallem auf die zuletzt geplotteten Daten schaut und schneller reagiert###
+### Aufgabe 4.2: Je höher n, desto länger braucht der Algo zur Berrechnung
 
 ### Aufgabe 2: Datenverarbeitung ###
 

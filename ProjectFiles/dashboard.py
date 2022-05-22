@@ -55,10 +55,12 @@ fig2 = px.line(df, x="Time (s)", y = "Temp (C)")
 fig3 = px.line(df, x="Time (s)", y = "Blood Flow (ml/s)")
 
 app.layout = html.Div(children=[
-    html.H1(children='Cardiopulmonary Bypass Dashboard'),
+    html.H1(children='Cardiopulmonary Bypass Dashboard', style={"text-align": "center"}),
 
     html.Div(children='''
-        Hier könnten Informationen zum Patienten stehen....
+        Alter: 30
+        Geschlecht: m
+        File-Number: 235
     '''),
 
     dcc.Checklist(
@@ -69,24 +71,30 @@ app.layout = html.Div(children=[
 
     html.Div([
         dcc.Dropdown(options = subj_numbers, placeholder='Select a subject', value='1', id='subject-dropdown'),
-    html.Div(id='dd-output-container')
+        html.Div(id='dd-output-container')
     ],
-        style={"width": "15%"}
+        style={"width": "15%"},
     ),
+    html.Div([
+        dcc.Graph(
+            id='dash-graph0',
+            figure=fig0
+        ),
+    ], style={"width": "50%", "float": "left"}),
 
-    dcc.Graph(
-        id='dash-graph0',
-        figure=fig0
-    ),
+    html.Div([
+        dcc.Graph(
+            id='dash-graph1',
+            figure=fig1,
+        )
+    ], style={"width": "50%", "margin-left": "50%"}),
 
-    dcc.Graph(
-        id='dash-graph1',
-        figure=fig1
-    ),
-    dcc.Graph(
-        id='dash-graph2',
-        figure=fig2
-    ),
+    html.Div([
+        dcc.Graph(
+            id='dash-graph2',
+            figure=fig2
+        )
+    ], style={"width": "100%"}),
 
     dcc.Checklist(
         id= 'checklist-bloodflow',
@@ -96,7 +104,13 @@ app.layout = html.Div(children=[
     dcc.Graph(
         id='dash-graph3',
         figure=fig3
-    )
+    ),
+    dcc.Textarea(
+        id='text-area1',
+        # readOnly=True,
+        disabled=True,  # disabled --> User cannot interact with textarea
+        style={"width": "100%", 'height': "auto"}
+    ),
 ])
 ### Callback Functions ###
 ## Graph Update Callback
@@ -109,9 +123,12 @@ app.layout = html.Div(children=[
     Input('checklist-algo','value')
 )
 def update_figure(value, algorithm_checkmarks):
-    print("Current Subject: ",value)
+
+    print("Current Subject: ", value)
     print("current checked checkmarks are: ", algorithm_checkmarks)
-    ts = list_of_subjects[int(value)-1].subject_data #ts ist time series in panda 
+
+    ts = list_of_subjects[int(value)-1].subject_data #ts ist time series in panda
+
     #SpO2
     fig0 = px.line(ts, x="Time (s)", y = data_names[0])
     # Blood Flow
@@ -135,7 +152,6 @@ def update_figure(value, algorithm_checkmarks):
 
     ####
 
-    
     if algorithm_checkmarks is not None: #Ohne diese Fkt. kann es is zu Fehlern kommen, weil Programm Probleme hat wenn beide None sind 
 
         if 'min' in (algorithm_checkmarks):   #Prüfung ob checkmark ausgewählt wurde
@@ -158,39 +174,36 @@ def update_figure(value, algorithm_checkmarks):
 @app.callback(
     # In- or Output('which html element','which element property')
     Output('dash-graph3', 'figure'),
+    Output('text-area1', 'value'),  # Output textarea for alert box
     Input('subject-dropdown', 'value'),
-    Input('checklist-bloodflow','value')
+    Input('checklist-bloodflow','value'),
 )
 def bloodflow_figure(value, bloodflow_checkmarks):
-    
+
     ## Calculate Moving Average: Aufgabe 2
-    print(bloodflow_checkmarks)
+
     bf = list_of_subjects[int(value)-1].subject_data
     fig3 = px.line(bf, x="Time (s)", y="Blood Flow (ml/s)")
 
-
     if bloodflow_checkmarks is not None:
 #Probleme bei importieren => keine Rückgabe der Werte aus utilities-Datei => Kein CMA/SMA Graph
-#print(bf) zur Nachverfolgung der Ausgabe 
+#print(bf) zur Nachverfolgung der Ausgabe
 #Programm hat allerdings auf Laptop von Studienkollegen funktioniert => hin und her pushen (deshalb wurde weitere Person ins repository eingeladen)
-# => anschließend hat Programm ohne Änderun wieder funktioniert 
+# => anschließend hat Programm ohne Änderun wieder funktioniert
 
         if bloodflow_checkmarks == ["CMA"]:
-            print(bf)
             bf["Blood Flow (ml/s) - CMA"] = ut.calculate_CMA(bf["Blood Flow (ml/s)"], 2) #2 gibt an ab welchem Intervall berechnet wird (kann durch probieren ermittelt werden)
-            print(bf) 
-            fig3 = px.line(bf, x="Time (s)", y="Blood Flow (ml/s) - CMA") #Beschriftung der Achsen 
+            fig3 = px.line(bf, x="Time (s)", y="Blood Flow (ml/s) - CMA") #Beschriftung der Achsen
 
 
         if bloodflow_checkmarks == ["SMA"]:
-            
-            bf["Blood Flow (ml/s) - SMA"] = ut.calculate_SMA(bf["Blood Flow (ml/s)"],5) #durch ut.calculate wird Funktion aus utilities aufgerufen 
-            fig3 = px.line(bf, x="Time (s)", y="Blood Flow (ml/s) - SMA") #Beschriftung der Achsen 
+            bf["Blood Flow (ml/s) - SMA"] = ut.calculate_SMA(bf["Blood Flow (ml/s)"],5) #durch ut.calculate wird Funktion aus utilities aufgerufen
+            fig3 = px.line(bf, x="Time (s)", y="Blood Flow (ml/s) - SMA") #Beschriftung der Achsen
 
 
-#Aufgabe 3.1 
+#Aufgabe 3.1
 
-    avg = bf.mean() #Funktion zur Berechnung des Mittlewerts 
+    avg = bf.mean() #Funktion zur Berechnung des Mittlewerts
 
     fig3.add_trace(go.Scatter(x = [0, 480], y= [avg.loc['Blood Flow (ml/s)'], avg.loc['Blood Flow (ml/s)']], mode = 'lines', name = 'average'))
 
@@ -201,9 +214,29 @@ def bloodflow_figure(value, bloodflow_checkmarks):
 
 
     y_oben = (avg.loc['Blood Flow (ml/s)'])*1.15 # *1.15 weil 15% größer
-    fig3.add_trace(go.Scatter(x = [0, 480], y= [y_oben, y_oben], mode = 'lines', marker_color = 'green', name = 'obere Intervallsgrenze')) 
+    fig3.add_trace(go.Scatter(x = [0, 480], y= [y_oben, y_oben], mode = 'lines', marker_color = 'green', name = 'obere Intervallsgrenze'))
 
-    return fig3
+    ## Aufgabe 3.3
+    alert_count = [] #
+    alert_sum = 0 #int, holds count of invalid values
+
+    alert_msg = ""
+    sma_key = "Blood Flow (ml/s) - SMA"
+    if sma_key in bf:
+        bf_SMA = bf[sma_key]
+
+        for i in bf_SMA:
+            if i > y_oben or i < y_unten: # is simple moving average value '>' or '<' than the limit
+                alert_count.append(bf.index[bf_SMA==i].tolist()) # append list of invalid values to list
+                alert_sum += 1 #for each invalid value, alert_sum is going up by 1
+
+        print('Alert count: ' + str(alert_count))
+        print(str(alert_sum))
+
+        # Defining alert message shown in textarea
+        alert_msg = 'Warning! Blood Flow exceeded/fell below the allowed Limit for a total of ' + str(alert_sum) + ' seconds!'
+
+    return fig3, alert_msg
 
 
 if __name__ == '__main__':
