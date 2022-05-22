@@ -56,12 +56,11 @@ fig3 = px.line(df, x="Time (s)", y = "Blood Flow (ml/s)")
 
 app.layout = html.Div(children=[
     html.H1(children='Cardiopulmonary Bypass Dashboard', style={"text-align": "center"}),
-
+#Überschrift center
     html.Div(children='''
-        Alter: 30
-        Geschlecht: m
-        File-Number: 235
+        Standort: Universitätsklinikum Innsbruck Chirugie Haus C
     '''),
+#Geräteinfo, hardcoded
 
     dcc.Checklist(
     id= 'checklist-algo',
@@ -96,6 +95,8 @@ app.layout = html.Div(children=[
         )
     ], style={"width": "100%"}),
 
+#Übersichtlicher
+
     dcc.Checklist(
         id= 'checklist-bloodflow',
         options=blood_flow_functions,
@@ -111,6 +112,9 @@ app.layout = html.Div(children=[
         disabled=True,  # disabled --> User cannot interact with textarea
         style={"width": "100%", 'height': "auto"}
     ),
+
+#Alert Message in Textfeld
+
 ])
 ### Callback Functions ###
 ## Graph Update Callback
@@ -140,24 +144,22 @@ def update_figure(value, algorithm_checkmarks):
     #https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.agg.html
     #https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.loc.html
 
-
     #es werden 2 Fkt. für max und min erstellt. Aus der time series ts werden mithilfe von . agg direkt die Werte berechnet
     max_values = ts.agg(['max', 'idxmax']) #Funktionen um gleich Maxima und Minima zu berechnen
-    min_values = ts.agg(['min', 'idxmin']) #idxmax siehe Tafelbild 16.05.2022 (Darstellung welche Werte für Scatter notwenidg)
-
-    #DataFrame.agg(func=None, axis=0, *args (positional), **kwargs(keyword))
-
+    min_values = ts.agg(['min', 'idxmin']) #idxmax siehe Tafelbild 16.05.2022 (Darstellung welche Werte für Scatter notwendig)
+    
+    ##DataFrame.agg(func=None, axis=0, *args (positional), **kwargs(keyword))
+    
     #print(max_values, 'idxmax')
     #print(min_values, 'idxmin')
 
 # https://www.geeksforgeeks.org/matplotlib-pyplot-scatter-in-python/
-# https://plotly.com/python-api-reference/generated/plotly.graph_objects.Figure.html
 
     ####
 
-    if algorithm_checkmarks is not None: #Fkt. dient zur Fehlerminimierung (verhindert Durchlauf obwohl auswahl 0 ist )
+    if algorithm_checkmarks is not None: #Fkt. dient zur Fehlerminimierung (verhindert Durchlauf obwohl auswahl 0 ist ) 
 
-        if 'min' in (algorithm_checkmarks):   #Prüfung ob checkmark "min" ausgewählt wurde
+        if 'min' in (algorithm_checkmarks):   #Prüfung ob checkmark 'min' ausgewählt wurde
             fig0.add_trace(go.Scatter(x= [min_values.loc['idxmin', data_names[0]]],y= [min_values.loc['min', data_names[0]]], mode = 'markers', name = 'minimum', marker_color='red'))
             #add_trace => fügt trace hinzu, Scatter => fügt Punkte hinzu 
             #data_names zeigt um welche figure es sich handelt 
@@ -166,9 +168,10 @@ def update_figure(value, algorithm_checkmarks):
             fig1.add_trace(go.Scatter(x= [min_values.loc['idxmin', data_names[1]]],y= [min_values.loc['min', data_names[1]]], mode = 'markers', name = 'minimum', marker_color='red'))
             fig2.add_trace(go.Scatter(x= [min_values.loc['idxmin', data_names[2]]],y= [min_values.loc['min', data_names[2]]], mode = 'markers', name = 'minimum', marker_color='red'))
 
+#data_names zeigt um welche figure es sich handelt 
+#mode/name/marker_color sind zum beschreiben des Punktes
 
-
-        if 'max' in (algorithm_checkmarks) :   #Prüfung ob checkmark "max" ausgewählt wurde 
+        if 'max' in (algorithm_checkmarks) :   #Prüfung ob checkmark 'max' ausgewählt wurde 
             fig0.add_trace(go.Scatter(x= [max_values.loc['idxmax', data_names[0]]],y= [max_values.loc['max', data_names[0]]], mode = 'markers', name = 'maximum', marker_color='green'))
             fig1.add_trace(go.Scatter(x= [max_values.loc['idxmax', data_names[1]]],y= [max_values.loc['max', data_names[1]]], mode = 'markers', name = 'maximum', marker_color='green'))
             fig2.add_trace(go.Scatter(x= [max_values.loc['idxmax', data_names[2]]],y= [max_values.loc['max', data_names[2]]], mode = 'markers', name = 'maximum', marker_color='green'))
@@ -197,14 +200,13 @@ def bloodflow_figure(value, bloodflow_checkmarks):
 #Programm hat allerdings auf Laptop von Studienkollegen funktioniert => hin und her pushen (deshalb wurde weitere Person ins repository eingeladen)
 # => anschließend hat Programm ohne Änderun wieder funktioniert
 
-        if bloodflow_checkmarks == ["CMA"]: #überprüfen ob checkmark CMA ausgewählt wurde 
-            bf["Blood Flow (ml/s) - CMA"] = ut.calculate_CMA(bf["Blood Flow (ml/s)"], 1) #2 gibt an ab welchem Intervall berechnet wird (kann durch probieren ermittelt werden)
-            #durch ut.calculate wird Funktion aus utilities aufgerufen
+        if bloodflow_checkmarks == ["CMA"]:
+            bf["Blood Flow (ml/s) - CMA"] = ut.calculate_CMA(bf["Blood Flow (ml/s)"], 2) #n gibt an ab welchem Intervall berechnet wird (kann durch probieren ermittelt werden)
             fig3 = px.line(bf, x="Time (s)", y="Blood Flow (ml/s) - CMA") #Beschriftung der Achsen
 
 
         if bloodflow_checkmarks == ["SMA"]:
-            bf["Blood Flow (ml/s) - SMA"] = ut.calculate_SMA(bf["Blood Flow (ml/s)"], 4) 
+            bf["Blood Flow (ml/s) - SMA"] = ut.calculate_SMA(bf["Blood Flow (ml/s)"],5) #durch ut.calculate wird Funktion aus utilities aufgerufen
             fig3 = px.line(bf, x="Time (s)", y="Blood Flow (ml/s) - SMA") 
 
 
@@ -215,21 +217,20 @@ def bloodflow_figure(value, bloodflow_checkmarks):
     fig3.add_trace(go.Scatter(x = [0, 480], y= [avg.loc['Blood Flow (ml/s)'], avg.loc['Blood Flow (ml/s)']], mode = 'lines', name = 'average'))
 
 #Aufgabe 3.2
+        #if 'Show Limits' in bloodflow_checkmarks:
 
-#Berechnen und ausgeben von 15% Intervallsgrenzen 
-
-    #if 'Show Limits' in bloodflow_checkmarks:
-    y_unten = (avg.loc['Blood Flow (ml/s)'])*0.85 # *0.85 weil 15% kleiner
+        #Funktion für 15% Intervallsgrenzen
+    y_unten = (avg.loc['Blood Flow (ml/s)'])*0.85 #Faktor zur Berechnung der 15%
     #avg.loc weil die Intervallsgrenzen um den Mittelwert gesucht sind 
     fig3.add_trace(go.Scatter(x = [0, 480], y= [y_unten, y_unten], mode = 'lines', marker_color = 'red', name = 'untere Intervallsgrenze'))
 
 
-    y_oben = (avg.loc['Blood Flow (ml/s)'])*1.15 # *1.15 weil 15% größer
+    y_oben = (avg.loc['Blood Flow (ml/s)'])*1.15 
     fig3.add_trace(go.Scatter(x = [0, 480], y= [y_oben, y_oben], mode = 'lines', marker_color = 'green', name = 'obere Intervallsgrenze'))
 
-    ## Aufgabe 3.3
-    alert_count = [] #
-    alert_sum = 0 #int, holds count of invalid values
+    # Aufgabe 3.3
+    alert_count = []
+    alert_sum = 0 #iholds invalid values, int
 
     alert_msg = ""
     sma_key = "Blood Flow (ml/s) - SMA"
@@ -237,14 +238,14 @@ def bloodflow_figure(value, bloodflow_checkmarks):
         bf_SMA = bf[sma_key]
 
         for i in bf_SMA:
-            if i > y_oben or i < y_unten: # is simple moving average value '>' or '<' than the limit
-                alert_count.append(bf.index[bf_SMA==i].tolist()) # append list of invalid values to list
-                alert_sum += 1 #for each invalid value, alert_sum is going up by 1
+            if i > y_oben or i < y_unten: #SMA value > or < than the limit
+                alert_count.append(bf.index[bf_SMA==i].tolist()) #add list of invalid values to list
+                alert_sum += 1 #+1 for each invalid
 
         print('Alert count: ' + str(alert_count))
         print(str(alert_sum))
 
-        # Defining alert message shown in textarea
+        #Content message + sec
         alert_msg = 'Warning! Blood Flow exceeded/fell below the allowed Limit for a total of ' + str(alert_sum) + ' seconds!'
 
     return fig3, alert_msg
@@ -252,3 +253,6 @@ def bloodflow_figure(value, bloodflow_checkmarks):
 
 if __name__ == '__main__':
     app.run_server(debug=True)
+
+# Aufgabe 3.4
+# SMA wurde so gewählt (n=4), dass erst ab größer 3 Alarm ausgelöst wird. Erst ab da ist ein "Trend" absehbar. -Fehlalarm
