@@ -168,8 +168,6 @@ def update_figure(value, algorithm_checkmarks):
             fig1.add_trace(go.Scatter(x= [min_values.loc['idxmin', data_names[1]]],y= [min_values.loc['min', data_names[1]]], mode = 'markers', name = 'minimum', marker_color='red'))
             fig2.add_trace(go.Scatter(x= [min_values.loc['idxmin', data_names[2]]],y= [min_values.loc['min', data_names[2]]], mode = 'markers', name = 'minimum', marker_color='red'))
 
-#data_names zeigt um welche figure es sich handelt 
-#mode/name/marker_color sind zum beschreiben des Punktes
 
         if 'max' in (algorithm_checkmarks) :   #Prüfung ob checkmark 'max' ausgewählt wurde 
             fig0.add_trace(go.Scatter(x= [max_values.loc['idxmax', data_names[0]]],y= [max_values.loc['max', data_names[0]]], mode = 'markers', name = 'maximum', marker_color='green'))
