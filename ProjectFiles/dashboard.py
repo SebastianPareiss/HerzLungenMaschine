@@ -56,12 +56,11 @@ fig3 = px.line(df, x="Time (s)", y = "Blood Flow (ml/s)")
 
 app.layout = html.Div(children=[
     html.H1(children='Cardiopulmonary Bypass Dashboard', style={"text-align": "center"}),
-
+#Überschrift center
     html.Div(children='''
-        Alter: 30
-        Geschlecht: m
-        File-Number: 235
+        Standort: Universitätsklinikum Innsbruck Chirugie Haus C
     '''),
+#Geräteinfo, hardcoded
 
     dcc.Checklist(
     id= 'checklist-algo',
@@ -96,6 +95,8 @@ app.layout = html.Div(children=[
         )
     ], style={"width": "100%"}),
 
+#Übersichtlicher
+
     dcc.Checklist(
         id= 'checklist-bloodflow',
         options=blood_flow_functions,
@@ -111,6 +112,9 @@ app.layout = html.Div(children=[
         disabled=True,  # disabled --> User cannot interact with textarea
         style={"width": "100%", 'height': "auto"}
     ),
+
+#Alert Message in Textfeld
+
 ])
 ### Callback Functions ###
 ## Graph Update Callback
@@ -216,9 +220,9 @@ def bloodflow_figure(value, bloodflow_checkmarks):
     y_oben = (avg.loc['Blood Flow (ml/s)'])*1.15 # *1.15 weil 15% größer
     fig3.add_trace(go.Scatter(x = [0, 480], y= [y_oben, y_oben], mode = 'lines', marker_color = 'green', name = 'obere Intervallsgrenze'))
 
-    ## Aufgabe 3.3
-    alert_count = [] #
-    alert_sum = 0 #int, holds count of invalid values
+    # Aufgabe 3.3
+    alert_count = []
+    alert_sum = 0 #iholds invalid values, int
 
     alert_msg = ""
     sma_key = "Blood Flow (ml/s) - SMA"
@@ -226,14 +230,14 @@ def bloodflow_figure(value, bloodflow_checkmarks):
         bf_SMA = bf[sma_key]
 
         for i in bf_SMA:
-            if i > y_oben or i < y_unten: # is simple moving average value '>' or '<' than the limit
-                alert_count.append(bf.index[bf_SMA==i].tolist()) # append list of invalid values to list
-                alert_sum += 1 #for each invalid value, alert_sum is going up by 1
+            if i > y_oben or i < y_unten: #SMA value > or < than the limit
+                alert_count.append(bf.index[bf_SMA==i].tolist()) #add list of invalid values to list
+                alert_sum += 1 #+1 for each invalid
 
         print('Alert count: ' + str(alert_count))
         print(str(alert_sum))
 
-        # Defining alert message shown in textarea
+        #Content message + sec
         alert_msg = 'Warning! Blood Flow exceeded/fell below the allowed Limit for a total of ' + str(alert_sum) + ' seconds!'
 
     return fig3, alert_msg
@@ -241,3 +245,6 @@ def bloodflow_figure(value, bloodflow_checkmarks):
 
 if __name__ == '__main__':
     app.run_server(debug=True)
+
+# Aufgabe 3.4
+# SMA wurde so gewählt (n=4), dass erst ab größer 3 Alarm ausgelöst wird. Erst ab da ist ein "Trend" absehbar. -Fehlalarm
