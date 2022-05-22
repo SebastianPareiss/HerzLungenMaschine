@@ -15,7 +15,7 @@ class Subject():
 
         __f = open(file_name)
         self.subject_data = pd.read_csv(__f)
-        #Interpolation der Daten, mithilfe von 'quadratic' werden Lücken aus _f ausgeglichen
+        #Interpolation der Daten, mithilfe von 'quadratic'
         #https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.interpolate.html
         self.subject_data = self.subject_data.interpolate(method='quadratic', axis=0) 
         #__splited_id = re.findall(r'\d+',file_name)
@@ -28,9 +28,8 @@ class Subject():
         self.blood_flow = self.subject_data["Blood Flow (ml/s)"]
         print('Subject ' + self.subject_id + ' initialized')
 
-
-
-        
+### Aufgabe 4.1: Geeignet für kleinere Perioden, je mehr desto schwerfälliger. Identifizierug von Trends über mehrer Tage-sinnvoll; kurzfristige Änderungen - eher weniger; Medsektor nicht verwenden bei Primärindikatoren, Sytem reagiert auf Notfälle zu langsam; eher EMA da dieser vorallem auf die zuletzt geplotteten Daten schaut und schneller reagiert###
+### Aufgabe 4.2: Je höher n, desto länger braucht der Algo zur Berrechnung
 
 ### Aufgabe 2: Datenverarbeitung ###
 
@@ -38,8 +37,10 @@ class Subject():
 
 def calculate_CMA(df,n):  #Cumulative Moving average => mean of all previous values up to current value 
     return df.expanding(n).mean() #Befehl für CMA => DataFrame providing expanding window calculation
+    #Reihe von zahlen wird addiert und anschließend durch Anzahl dividiert
     
 #https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.rolling.html
 
 def calculate_SMA(df,n):  #Simple Moving average => unweighted mean of previous K data
     return df.rolling(n).mean() #Befehl für SMA => DataFrame providing rolling window calculation
+    #durchschnitlliche Werte über bestimmte Zeitspanne
