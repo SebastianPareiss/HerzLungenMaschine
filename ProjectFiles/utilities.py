@@ -20,7 +20,7 @@ class Subject():
         self.subject_data = self.subject_data.interpolate(method='quadratic', axis=0) 
         #__splited_id = re.findall(r'\d+',file_name)
         #print(__splited_id)   
-        self.subject_id = file_name.split(".csv")[0][-1] #Ausgleichen des Fehlers vom Dateipfad...Dateipfad hat immer nur Subject 2 hergegeben 
+        self.subject_id = file_name.split(".csv")[0][-1] #Ausgleichen des Fehlers vom Dateipfad (Dateipfad hat immer nur Subject 2 hergegeben) => durch .csv wird gesamter Pfad durchsucht und schaut nicht nur auf 2
         self.names = self.subject_data.columns.values.tolist()
         self.time = self.subject_data["Time (s)"]        
         self.spO2 = self.subject_data["SpO2 (%)"]
