@@ -5,7 +5,7 @@ from dash import Dash, html, dcc, Output, Input, dash_table
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
-import utilities as ut
+import utilities as ut #um Funktionen aus utilities zu bekommen 
 import numpy as np
 import os
 import re
@@ -141,6 +141,7 @@ def update_figure(value, algorithm_checkmarks):
     fig2 = px.line(ts, x="Time (s)", y = data_names[2])
     
     ### Aufgabe 2: Min / Max ###
+
     #https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.agg.html
     #https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.loc.html
 
@@ -215,20 +216,21 @@ def bloodflow_figure(value, bloodflow_checkmarks):
     fig3.add_trace(go.Scatter(x = [0, 480], y= [avg.loc['Blood Flow (ml/s)'], avg.loc['Blood Flow (ml/s)']], mode = 'lines', name = 'average'))
 
 #Aufgabe 3.2
-        #if 'Show Limits' in bloodflow_checkmarks:
+    
+#if 'Show Limits' in bloodflow_checkmarks:
 
         #Funktion für 15% Intervallsgrenzen
     y_unten = (avg.loc['Blood Flow (ml/s)'])*0.85 #Faktor zur Berechnung der 15%
-    #avg.loc weil die Intervallsgrenzen um den Mittelwert gesucht sind 
+        #avg.loc weil die Intervallsgrenzen um den Mittelwert gesucht sind 
     fig3.add_trace(go.Scatter(x = [0, 480], y= [y_unten, y_unten], mode = 'lines', marker_color = 'red', name = 'untere Intervallsgrenze'))
-
 
     y_oben = (avg.loc['Blood Flow (ml/s)'])*1.15 
     fig3.add_trace(go.Scatter(x = [0, 480], y= [y_oben, y_oben], mode = 'lines', marker_color = 'green', name = 'obere Intervallsgrenze'))
 
+
     # Aufgabe 3.3
     alert_count = []
-    alert_sum = 0 #iholds invalid values, int
+    alert_sum = 0 #holds invalid values, int
 
     alert_msg = ""
     sma_key = "Blood Flow (ml/s) - SMA"
@@ -236,15 +238,13 @@ def bloodflow_figure(value, bloodflow_checkmarks):
         bf_SMA = bf[sma_key]
 
         for i in bf_SMA:
-            if i > y_oben or i < y_unten: #SMA value > or < than the limit
-                alert_count.append(bf.index[bf_SMA==i].tolist()) #add list of invalid values to list
+            if i > y_oben or i < y_unten: #SMA value > or <
+                alert_count.append(bf.index[bf_SMA==i].tolist()) #adds invalid values to list
                 alert_sum += 1 #+1 for each invalid
 
-        print('Alert count: ' + str(alert_count))
-        print(str(alert_sum))
 
         #Content message + sec
-        alert_msg = 'Warning! Blood Flow exceeded/fell below the allowed Limit for a total of ' + str(alert_sum) + ' seconds!'
+        alert_msg = 'ALert! Ecceded limets for ' + str(alert_sum) + ' seconds!'
 
     return fig3, alert_msg
 
